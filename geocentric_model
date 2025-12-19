@@ -1,0 +1,86 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib.patches import Circle, Rectangle
+
+# Constants
+mars_deferent_radius = 1.52          # Radius of Mars' epicycle center (deferent)
+epicycle_radius = 0.4                # Radius of epicycle
+sun_radius = 1                       # Sun's orbit around Earth
+mars_epicycle_angular_speed = 4.7  # Mars' speed around epicycle
+mars_deferent_angular_speed = 0.8  # Epicycle center angular speed
+sun_angular_speed = 1.5037               # Sun's angular speed
+
+# Time array
+time = np.linspace(0, 8, 451)
+
+# Earth is fixed at origin
+earth_x = np.zeros_like(time)
+earth_y = np.zeros_like(time)
+
+# Sun's motion (orbiting Earth)
+sun_x = sun_radius * np.cos(sun_angular_speed * time)
+sun_y = sun_radius * np.sin(sun_angular_speed * time)
+
+# Epicycle center position (Mars deferent)
+epicycle_center_x = mars_deferent_radius * np.cos(mars_deferent_angular_speed * time)
+epicycle_center_y = mars_deferent_radius * np.sin(mars_deferent_angular_speed * time)
+
+# Mars motion around epicycle center
+mars_x = epicycle_center_x + epicycle_radius * np.cos(mars_epicycle_angular_speed * time)
+mars_y = epicycle_center_y + epicycle_radius * np.sin(mars_epicycle_angular_speed * time)
+
+# Plot setup
+fig, ax = plt.subplots(figsize=(6, 6))
+ax.set_xlim(-3, 3)
+ax.set_ylim(-3, 3)
+ax.set_aspect('equal')
+ax.axis('off')
+fig.patch.set_facecolor("black")
+ax.set_facecolor("black")
+
+ax.text(0, 2.5, 'Geocentric Model', color='white', fontsize=12, ha='center')
+scale = Rectangle([0, -2.8], 1, 0.1, color='white', alpha=1)
+ax.add_patch(scale)
+ax.text(0.5, -2.7, '1 AU', color='white', fontsize=8, ha='center')
+
+# Animation function
+def animate(i):
+    ax.clear()
+    ax.text(0, 2.5, 'Geocentric Model', color='white', fontsize=12, ha='center')
+    scale = Rectangle([-0.5, -2.8], 1, 0.03, color='white', alpha=1)
+    ax.add_patch(scale)
+    ax.text(0, -2.7, 'Scale: 1 Unit = 1 AU', color='white', fontsize=8, ha='center')
+    ax.set_xlim(-3, 3)
+    ax.set_ylim(-3, 3)
+    ax.set_aspect('equal')
+    ax.axis('off')
+    ax.set_facecolor("black")
+
+    # Earth (center)
+    ax.plot(0, 0, 'bo', markersize=10)
+    ax.text(0, 0.15, 'Earth', color='white', ha='center')
+
+    # Sun orbiting Earth
+    ax.plot(sun_x[:i], sun_y[:i], color='yellow', linestyle='--', linewidth=0.5, alpha=0.5)
+    ax.plot(sun_x[i], sun_y[i], 'yo', markersize=6)
+    ax.text(sun_x[i], sun_y[i]+0.15, 'Sun', color='yellow', ha='center')
+
+    # Mars deferent (epicycle center)
+    ax.plot(epicycle_center_x[:i], epicycle_center_y[:i], color='cyan', linestyle=':', linewidth=0.5, alpha=0.5)
+    ax.plot(epicycle_center_x[i], epicycle_center_y[i], '.', markersize=0.4)
+
+    # Epicycle circle
+    epicycle = Circle((epicycle_center_x[i], epicycle_center_y[i]), epicycle_radius,
+                      edgecolor='lightgreen', facecolor='none', linestyle='--', linewidth=0.7, alpha=0.7)
+    ax.add_patch(epicycle)
+
+    # Mars full path and current position
+    ax.plot(mars_x[:i], mars_y[:i], 'r-', linewidth=1)
+    ax.plot(mars_x[i], mars_y[i], 'ro', markersize=5)
+    ax.text(mars_x[i], mars_y[i]+0.15, 'Mars', color='red', ha='center')
+
+# Run the animation
+ani = animation.FuncAnimation(fig, animate, frames=len(time), interval=20, repeat=True)
+# ani.save('geocentric_model.gif', writer='pillow', fps=30)
+plt.show()
