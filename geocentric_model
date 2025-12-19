@@ -82,5 +82,4 @@ def animate(i):
 
 # Run the animation
 ani = animation.FuncAnimation(fig, animate, frames=len(time), interval=20, repeat=True)
-# ani.save('geocentric_model.gif', writer='pillow', fps=30)
-plt.show()
+ani.save('geocentric_model.gif', writer='pillow', fps=30)
