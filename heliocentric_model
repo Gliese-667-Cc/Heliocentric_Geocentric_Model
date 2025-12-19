@@ -79,4 +79,5 @@ def update(frame):
 ani = FuncAnimation(fig, update, frames=frames, blit=True)
 
 ani.save("realistic_heliocentric_model.gif", writer=PillowWriter(fps=fps))
-print("Saved: realistic_heliocentric_model.gif")
+
+
